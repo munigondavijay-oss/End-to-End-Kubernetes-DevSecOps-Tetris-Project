@@ -4,15 +4,16 @@ resource "aws_eks_node_group" "eks-node-group" {
   node_role_arn   = aws_iam_role.NodeGroupRole.arn
   subnet_ids      = [data.aws_subnet.subnet.id, aws_subnet.public-subnet2.id]
 
-
   scaling_config {
-    desired_size = 2
-    max_size     = 3
+    desired_size = 1   # 1 node to stay well under vCPU limit
+    max_size     = 2
     min_size     = 1
   }
 
-  instance_types = ["t2.small"]
+  instance_types = ["t3.small"]  # 2 vCPUs per node
   disk_size      = 20
+
+  force_update_version = true  # ensures updates go through
 
   depends_on = [
     aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
